@@ -2,10 +2,10 @@ import os
 import sys
 
 if len(sys.argv) == 1:
-    print ("You need to provide a path to sort")
+    print("You need to provide a path to sort")
     sys.exit()
 else:
-    folderPath = sys.argv[1]
+    folderPath = os.path.join(os.path.normpath(sys.argv[1]),'')
 
 contents = os.listdir(folderPath)
 
@@ -19,11 +19,16 @@ for file in contents:
 for ext in extensions:
     if not os.path.isdir(folderPath + ext[1:]):
         os.mkdir(folderPath + ext[1:])
-        print ('folder created: ' + ext[1:])
+        print('folder created: ' + ext[1:])
     else:
-        print ('folder already exists: ' + ext[1:])
+        print('folder already exists: ' + ext[1:])
 
     for file in contents:
         if ext in os.path.splitext(file):
-            os.rename((folderPath + file),(os.path.join(folderPath, ext[1:], file)))
-            print ('moved ' + file + ' to ' + ext[1:])
+            fullFilePath = os.path.join(folderPath + file)
+            try:
+                os.rename(fullFilePath,
+                          (os.path.join(folderPath, ext[1:], file)))
+                print('moved ' + file + ' to ' + ext[1:])
+            except FileNotFoundError as exc:
+                print(f'Cant find {fullFilePath}')
